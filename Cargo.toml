@@ -1,0 +1,37 @@
+[package]
+name = "sloword2vec"
+version = "0.1.0"
+authors = ["Lloyd <lloydmeta@gmail.com>"]
+description = "A naive implementation of word2vec"
+license = "MIT"
+homepage = "https://github.com/lloydmeta/sloword2vec-rs"
+documentation = "https://docs.rs/sloword2vec"
+keywords = [ "word2vec", "linalg", "nlp" ]
+
+[dependencies]
+lazy_static = "0.2.8"
+regex = "0.2.2"
+rand = "0.3"
+log = "0.3"
+serde = "1.0.11"
+serde_derive = "1.0.11"
+serde_json = "1.0.2"
+clap = "2.26.0"
+indicatif = "0.6.0"
+flate2 = "0.2"
+ndarray = { version = "0.10", features = ["blas"] }
+blas-sys = { version = "0.6", default-features = false, features = ["openblas"] }
+rayon = "0.8.2"
+
+[dev-dependencies]
+env_logger = "0.3"
+
+[profile.release]
+opt-level = 3
+debug = false
+lto = true
+
+[[bin]]
+name = "sloword2vec"
+test = false
+doc = false
