@@ -3,3 +3,9 @@ sudo: false
 rust:
   - stable
 cache: cargo
+addons:
+  apt:
+    packages:
+      - libopenblas-dev
+      - gfortran
+      - gfortran-multilib
