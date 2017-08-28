@@ -7,6 +7,7 @@ license = "MIT"
 homepage = "https://github.com/lloydmeta/sloword2vec-rs"
 documentation = "https://docs.rs/sloword2vec"
 keywords = [ "word2vec", "linalg", "nlp" ]
+exclude = ["models/*", "src/data/*"]
 
 [dependencies]
 lazy_static = "0.2.8"
