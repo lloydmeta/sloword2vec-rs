@@ -1,4 +1,4 @@
-# SloWord2Vec
+# SloWord2Vec [![Build Status](https://travis-ci.org/lloydmeta/sloword2vec-rs.svg?branch=master)](https://travis-ci.org/lloydmeta/sloword2vec-rs)
 
 This is a naive implementation of Word2Vec implemented in Rust.
 
