@@ -1,6 +1,6 @@
 [package]
 name = "sloword2vec"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Lloyd <lloydmeta@gmail.com>"]
 description = "A naive implementation of word2vec"
 license = "MIT"
