@@ -21,6 +21,7 @@ clap = "2.26.0"
 indicatif = "0.6.0"
 flate2 = "0.2"
 ndarray = { version = "0.10", features = ["blas"] }
+ndarray-rand = "0.6"
 blas-sys = { version = "0.6", default-features = false, features = ["openblas"] }
 rayon = "0.8.2"
 

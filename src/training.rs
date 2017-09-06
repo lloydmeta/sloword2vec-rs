@@ -1,5 +1,6 @@
-use rand::random;
 use ndarray::Array;
+use ndarray_rand::RandomExt;
+use rand::distributions::Range;
 use std::f32::consts::E;
 use std::f32;
 use super::onehot::{OneHotLookupInternal, OneHotLookup, OneHot};
@@ -189,14 +190,19 @@ impl<'a> Trainer<'a> {
         training_params: TrainingParams,
     ) -> Trainer<'a> {
         let vocab_size = one_hot_lookup.vocab_size();
-        let input_weights = Array::from_shape_fn(
+        let rand_range = {
+            let l_bound = -1. / (vocab_size as f32).sqrt();
+            let u_bound = 1. / (vocab_size as f32).sqrt();
+            Range::new(l_bound, u_bound)
+        };
+        let input_weights = Array::random(
             (vocab_size, training_params.encoding_dimensions),
-            |_| random(),
+            rand_range,
         );
         // Not sure if we can just transpose input_weights. Just use a different one just in case.
-        let output_weights = Array::from_shape_fn(
+        let output_weights = Array::random(
             (training_params.encoding_dimensions, vocab_size),
-            |_| random(),
+            rand_range,
         );
         Trainer {
             one_hot_lookup,

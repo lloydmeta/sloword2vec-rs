@@ -5,6 +5,8 @@ extern crate indicatif;
 use clap::{App, SubCommand, Arg};
 use sloword2vec::training::*;
 use sloword2vec::errors::Error;
+use std::process::exit;
+use std::error::Error as StdError;
 use std::str::FromStr;
 use std::path::Path;
 use std::fmt::Display;
@@ -35,6 +37,16 @@ Please be patient. Training is slooooooow.
 "#;
 
 fn main() {
+    exit(match inner_main() {
+        Ok(_) => 0,
+        Err(e) => {
+            println!("Something horrible happened:\n{}", e);
+            1
+        }
+    })
+}
+
+fn inner_main() -> Result<(), Box<StdError>> {
 
     let v = version();
     let app = App::new("SloWord2Vec")
@@ -153,7 +165,7 @@ fn main() {
                         .long(MIN_ERROR_IMPROVEMENT_KEY)
                         .takes_value(true)
                         .number_of_values(1)
-                        .default_value("0.0001")
+                        .default_value("0.0000001")
                         .validator(|s| {
                             let r: Result<f32, String> = coerce_validate(
                                 &s,
@@ -295,25 +307,13 @@ fn main() {
              Some(min_word_occ_str),
              Some(min_err_impr_str),
              Some(acpt_err_str)) => {
-                let max_iterations = usize::from_str(max_iterations_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                let context_radius = usize::from_str(context_radius_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                let learning_rate = f32::from_str(learning_rate_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                let encoding_dims =
-                    usize::from_str(enc_dims_str).expect("Parsing should not fail at this point.");
-                let min_word_occ = usize::from_str(min_word_occ_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                let min_err_impr = f32::from_str(min_err_impr_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                let acpt_err =
-                    f32::from_str(acpt_err_str).expect("Parsing should not fail at this point.");
+                let max_iterations = usize::from_str(max_iterations_str)?;
+                let context_radius = usize::from_str(context_radius_str)?;
+                let learning_rate = f32::from_str(learning_rate_str)?;
+                let encoding_dims = usize::from_str(enc_dims_str)?;
+                let min_word_occ = usize::from_str(min_word_occ_str)?;
+                let min_err_impr = f32::from_str(min_err_impr_str)?;
+                let acpt_err = f32::from_str(acpt_err_str)?;
                 let training_params = TrainingParams {
                     max_iterations: max_iterations,
                     learning_rate: learning_rate,
@@ -323,15 +323,14 @@ fn main() {
                     avg_err_improvement_min: min_err_impr,
                     acceptable_err: acpt_err,
                 };
-                train_and_save(corpus_path_str, model_path_str, training_params)
-                    .expect("Training should not fail.")
+                Ok(train_and_save(
+                    corpus_path_str,
+                    model_path_str,
+                    training_params,
+                )?)
             }
-            _ => {
-                app_clone.print_long_help().expect(
-                    "Printing CLI help should not fail",
-                )
-            }
-        };
+            _ => Ok(app_clone.print_long_help()?),
+        }
     } else if let Some(similar_matches) = matches.subcommand_matches("similar") {
         let match_tuple = (
             similar_matches.value_of(MODEL_PATH_KEY),
@@ -340,17 +339,14 @@ fn main() {
         );
         match match_tuple {
             (Some(model_path_str), Some(similar_to_target), Some(similar_limit_str)) => {
-                let similar_limit = usize::from_str(similar_limit_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                load_and_find_similar(model_path_str, similar_to_target, similar_limit)
-                    .expect("Finding similar terms should not fail")
+                let similar_limit = usize::from_str(similar_limit_str)?;
+                Ok(load_and_find_similar(
+                    model_path_str,
+                    similar_to_target,
+                    similar_limit,
+                )?)
             }
-            _ => {
-                app_clone.print_long_help().expect(
-                    "Printing CLI help should not fail",
-                )
-            }
+            _ => Ok(app_clone.print_long_help()?),
         }
     } else if let Some(add_subtract_matches) = matches.subcommand_matches("add-subtract") {
         let match_tuple = (
@@ -364,26 +360,18 @@ fn main() {
              Some(add_strs),
              Some(subtract_strs),
              Some(similar_limit_str)) => {
-                let similar_limit = usize::from_str(similar_limit_str).expect(
-                    "Parsing should not fail at this point.",
-                );
-                load_and_do_maths(
+                let similar_limit = usize::from_str(similar_limit_str)?;
+                Ok(load_and_do_maths(
                     model_path_str,
                     &add_strs.collect(),
                     &subtract_strs.collect(),
                     similar_limit,
-                ).expect("Doing maths should not fail")
+                )?)
             }
-            _ => {
-                app_clone.print_long_help().expect(
-                    "Printing CLI help should not fail",
-                )
-            }
+            _ => Ok(app_clone.print_long_help()?),
         }
     } else {
-        app_clone.print_long_help().expect(
-            "Printing CLI help should not fail",
-        );
+        Ok(app_clone.print_long_help()?)
     }
 
 }
