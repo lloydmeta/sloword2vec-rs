@@ -17,6 +17,7 @@ extern crate flate2;
 
 #[macro_use]
 extern crate ndarray;
+extern crate ndarray_rand;
 
 pub mod onehot;
 pub mod text_processing;
